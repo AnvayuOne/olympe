@@ -1,26 +1,62 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ---------------------------------------------------------------------
+   OLYMPE INDIA × SIDEJOU INVITES — color + type foundation.
+   Literal brand tokens live directly in @theme; the font tokens are
+   indirected through the CSS variables next/font attaches to <html>
+   (see app/layout.js), which is why they live in a separate
+   `@theme inline` block instead of being declared as literals.
+------------------------------------------------------------------------ */
+
+@theme {
+  --color-ink: #050505;
+  --color-void: #0b0c0c;
+  --color-graphite: #151718;
+  --color-graphite-2: #242729;
+
+  --color-chrome-dark: #6f7374;
+  --color-chrome: #a6a9a8;
+  --color-chrome-light: #d1d0ca;
+
+  --color-copper-dark: #8a4932;
+  --color-copper: #a65b3c;
+  --color-copper-light: #c47a55;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-bebas);
+  --font-body: var(--font-archivo);
+  --font-mono: var(--font-plex-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    background: var(--color-ink);
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--color-ink);
+    color: var(--color-chrome-light);
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+  }
+
+  ::selection {
+    background: var(--color-copper);
+    color: var(--color-ink);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* Native scroll/snap/swipe for the lineup rail, without a visible
+     scrollbar duplicating the gallery's own implied edges. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }

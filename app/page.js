@@ -1,69 +1,160 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import Image from "next/image";
+
+import Hero from "@/components/hero/Hero";
+import EventSection from "@/components/sections/EventSection";
+import LineupSection from "@/components/sections/LineupSection";
+import BrandSection from "@/components/sections/BrandSection";
+import TicketsSection from "@/components/sections/TicketsSection";
+import SiteFooter from "@/components/layout/SiteFooter";
+import StickyTickets from "@/components/common/StickyTickets";
+
+const HERO_ASSETS = {
+  wing: "/assets/olympe/hero/wing.webp",
+  logo: "/assets/olympe/hero/olympe-india.png",
+};
+
+function BackgroundEmblem() {
+  const emblemRef = useRef(null);
+
+  useEffect(() => {
+    let frame;
+
+    const update = () => {
+      frame = requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        const viewportHeight = window.innerHeight;
+
+        /*
+         * Start revealing the background emblem
+         * as the hero begins leaving the viewport.
+         */
+        const revealProgress = Math.min(
+          1,
+          Math.max(0, (scrollY - viewportHeight * 0.55) /
+            (viewportHeight * 0.8))
+        );
+
+        /*
+         * Fade it out much later.
+         * This keeps it present through the main content.
+         */
+        const fadeOutProgress = Math.min(
+          1,
+          Math.max(
+            0,
+            (scrollY - viewportHeight * 2.8) /
+              (viewportHeight * 1.2)
+          )
+        );
+
+        const opacity =
+          revealProgress *
+          0.065 *
+          (1 - fadeOutProgress);
+
+        /*
+         * Very subtle parallax.
+         */
+        const translateY = -revealProgress * 25;
+
+        /*
+         * Tiny scale change.
+         */
+        const scale = 1 + revealProgress * 0.05;
+
+        if (emblemRef.current) {
+          emblemRef.current.style.opacity = String(opacity);
+
+          emblemRef.current.style.transform =
+            `translate3d(-50%, calc(-50% + ${translateY}px), 0) scale(${scale})`;
+        }
+      });
+    };
+
+    update();
+
+    window.addEventListener("scroll", update, {
+      passive: true,
+    });
+
+    window.addEventListener("resize", update);
+
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+
+      if (frame) {
+        cancelAnimationFrame(frame);
+      }
+    };
+  }, []);
+
+  return (
+    <div
+      ref={emblemRef}
+      className="pointer-events-none fixed left-1/2 top-1/2 z-10 w-[min(94vw,1050px)] -translate-x-1/2 -translate-y-1/2 opacity-0"
+      aria-hidden="true"
+    >
+      <div className="relative aspect-[1.75/1] w-full">
+        {/* Left wing */}
+        <div className="absolute inset-y-0 left-0 w-[49%]">
+          <Image
+            src={HERO_ASSETS.wing}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-contain opacity-70"
+            draggable={false}
+          />
+        </div>
+
+        {/* Right wing */}
+        <div className="absolute inset-y-0 right-0 w-[49%] scale-x-[-1]">
+          <Image
+            src={HERO_ASSETS.wing}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-contain opacity-70"
+            draggable={false}
+          />
+        </div>
+
+        {/* OLYMPE INDIA */}
+        <div className="absolute left-1/2 top-[34%] z-10 w-[60%] -translate-x-1/2 -translate-y-1/2 sm:w-[54%] lg:w-[50%]">
+          <Image
+            src={HERO_ASSETS.logo}
+            alt=""
+            width={1000}
+            height={1000}
+            className="h-auto w-full"
+            draggable={false}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.js
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <>
+      {/* Persistent emblem behind the entire experience */}
+      <BackgroundEmblem />
+
+      <main className="relative z-0 bg-ink">
+        <Hero />
+        <EventSection />
+        <LineupSection />
+        <BrandSection />
+        <TicketsSection />
       </main>
-    </div>
+
+      <SiteFooter />
+      <StickyTickets />
+    </>
   );
 }
